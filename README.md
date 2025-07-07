@@ -16,6 +16,13 @@ A modern MVP that uses AI to generate full multi-page websites from natural lang
 
 ---
 
+## ⚡ Performance
+
+This app is optimized for speed and accessibility.
+
+![Lighthouse Score](./public/performance.png)
+
+
 ## ✨ Features
 
 - 🧠 AI-powered multi-page website generation from plain-text descriptions  
