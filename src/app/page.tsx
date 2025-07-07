@@ -29,7 +29,7 @@ export default function Home() {
 
     setIsGenerating(true);
 
-    // Simulate AI generation
+    
     setTimeout(() => {
       setIsGenerating(false);
       toast.success("Website generated successfully!");
@@ -44,7 +44,7 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50">
       <div className="container mx-auto px-4 py-16">
-        {/* Header */}
+        
         <div className="text-center mb-16">
           <div className="flex items-center justify-center mb-6">
             <div className="p-3 bg-blue-500 rounded-2xl mr-3">
@@ -60,7 +60,7 @@ export default function Home() {
           </p>
         </div>
 
-        {/* Prompt Input Section */}
+        
         <div className="max-w-4xl mx-auto mb-16">
           <Card className="border-0 shadow-xl bg-white/70 backdrop-blur-sm">
             <CardContent className="p-8">
@@ -105,7 +105,7 @@ export default function Home() {
           </Card>
         </div>
 
-        {/* Example Prompts */}
+       
         <div className="max-w-6xl mx-auto">
           <h2 className="text-2xl font-bold text-center mb-8 text-slate-800">
             Need inspiration? Try these examples
