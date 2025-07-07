@@ -1,22 +1,33 @@
-"use client";
-
-import { SidebarTrigger } from "@/components/ui/sidebar";
+import { ReactNode } from "react";
 
 interface TopToolbarProps {
   websiteTitle: string;
+  additionalActions?: ReactNode;
 }
 
-export function TopToolbar({ websiteTitle }: TopToolbarProps) {
+export const TopToolbar = ({
+  websiteTitle,
+  additionalActions,
+}: TopToolbarProps) => {
   return (
-    <div className="h-16 border-b border-slate-200 bg-white flex items-center justify-between px-6">
-      <div className="flex items-center gap-4">
-        <SidebarTrigger />
+    <div className="border-b border-slate-200 bg-white px-6 py-4">
+      <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-lg font-semibold text-slate-800">
+          <h1 className="text-xl font-semibold text-slate-800">
             {websiteTitle}
           </h1>
+          <p className="text-sm text-slate-500">Dashboard</p>
+        </div>
+
+        <div className="flex items-center gap-3">
+          {additionalActions}
+
+     
+          <div className="flex items-center gap-2">
+          
+          </div>
         </div>
       </div>
     </div>
   );
-}
+};
