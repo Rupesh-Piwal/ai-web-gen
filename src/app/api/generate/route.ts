@@ -17,38 +17,50 @@ export async function POST(req: NextRequest) {
 
     const result = await generateText({
       model: google("models/gemini-1.5-flash"),
-      prompt: `You are a helpful web developer AI. 
-Generate HTML pages for a small website based on the following description: "${description}"
+      prompt: `You are a professional full-stack web developer AI.
 
-You must create exactly 4 pages: home, about, services, and contact.
+Based on the following website description, generate 4 fully-designed and visually appealing HTML pages: Home, About, Services, and Contact.
 
-Return ONLY a valid JSON object with this exact structure:
+Description:
+"${description}"
+
+Requirements:
+- The website should look **modern, clean, and professional**.
+- Use **inline CSS styles** inside the <style> tag for layout, fonts, colors, spacing, buttons, etc.
+- Each page must have:
+  - A consistent header with the site name and navigation links to all 4 pages.
+  - A visually distinct hero section on the home page.
+  - A styled content section for About, Services, and Contact.
+  - A styled footer at the bottom.
+- Use a **modern Google Font**.
+- Use proper semantic HTML: <header>, <nav>, <main>, <section>, <footer>.
+- Make layout responsive (mobile-friendly) with CSS media queries.
+- Feel free to use modern UI patterns like cards, grids, buttons, etc.
+
+Return ONLY a valid JSON object in this exact format:
 {
-  "home": "<!DOCTYPE html><html><head><title>Home</title></head><body><h1>Home Page</h1></body></html>",
-  "about": "<!DOCTYPE html><html><head><title>About</title></head><body><h1>About Page</h1></body></html>",
-  "services": "<!DOCTYPE html><html><head><title>Services</title></head><body><h1>Services Page</h1></body></html>",
-  "contact": "<!DOCTYPE html><html><head><title>Contact</title></head><body><h1>Contact Page</h1></body></html>"
+  "home": "<!DOCTYPE html>...full HTML for Home...",
+  "about": "<!DOCTYPE html>...full HTML for About...",
+  "services": "<!DOCTYPE html>...full HTML for Services...",
+  "contact": "<!DOCTYPE html>...full HTML for Contact..."
 }
 
-Rules:
-- Return ONLY the JSON object
-- No markdown code blocks
-- No explanatory text
-- All 4 pages must be present
-- Each page must be complete HTML`,
+Important:
+- Do NOT include markdown formatting.
+- Do NOT include explanations.
+- Do NOT leave any page blank.
+- Each page must be full standalone HTML.
+- Focus on clean UX, consistency, and basic aesthetics.`,
     });
 
-    // Better JSON extraction
     let jsonText = result.text.trim();
 
-    // Remove markdown code blocks if present
     if (jsonText.startsWith("```json")) {
       jsonText = jsonText.replace(/```json\n?/, "").replace(/\n?```$/, "");
     } else if (jsonText.startsWith("```")) {
       jsonText = jsonText.replace(/```\n?/, "").replace(/\n?```$/, "");
     }
 
-    // Find JSON object boundaries
     const jsonStart = jsonText.indexOf("{");
     const jsonEnd = jsonText.lastIndexOf("}") + 1;
 
@@ -58,10 +70,8 @@ Rules:
 
     jsonText = jsonText.slice(jsonStart, jsonEnd);
 
-    // Parse and validate JSON
     const pages = JSON.parse(jsonText);
 
-    // Validate that we have the expected structure
     const requiredPages = ["home", "about", "services", "contact"];
     const missingPages = requiredPages.filter(
       (page) => !pages[page] || typeof pages[page] !== "string"
@@ -72,7 +82,6 @@ Rules:
       console.error("Received pages:", Object.keys(pages));
       console.error("Raw AI response:", result.text);
 
-      // Create fallback pages for missing ones
       missingPages.forEach((page) => {
         pages[page] = `<!DOCTYPE html><html><head><title>${
           page.charAt(0).toUpperCase() + page.slice(1)
@@ -88,7 +97,6 @@ Rules:
   } catch (err: any) {
     console.error("🔴 Error in /api/generate:", err?.message || err);
 
-    // More specific error handling
     if (err instanceof SyntaxError) {
       return NextResponse.json(
         { error: "Invalid JSON response from AI model" },

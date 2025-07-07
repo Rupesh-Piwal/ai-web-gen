@@ -8,9 +8,8 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarHeader,
-  SidebarFooter,
 } from "@/components/ui/sidebar";
-import { Button } from "@/components/ui/button";
+
 
 interface AppSidebarProps {
   pages: { id: string; title: string; preview?: string; icon?: any }[];

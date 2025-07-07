@@ -41,13 +41,12 @@ export default function Home() {
 
       const data = await res.json();
 
-      // Check if the response was successful
+      
       if (!res.ok) {
         throw new Error(data.error || `HTTP error! status: ${res.status}`);
       }
 
-      // The API now returns the pages directly and handles missing pages with fallbacks
-      // Basic validation that we have an object with pages
+  
       if (!data || typeof data !== "object") {
         throw new Error("Invalid response format from server");
       }
@@ -57,7 +56,6 @@ export default function Home() {
         throw new Error("No pages generated");
       }
 
-      // Set the pages directly since the API returns { home: ..., about: ..., ... }
       usePageStore.getState().setPages(data);
       toast.success(
         `Website generated successfully! (${pageCount} pages created)`
@@ -66,7 +64,6 @@ export default function Home() {
     } catch (err: any) {
       console.error("Generate Error:", err);
 
-      // More specific error messages
       if (err.message.includes("Invalid response format")) {
         toast.error("Server returned invalid data. Please try again.");
       } else if (err.message.includes("No pages generated")) {
@@ -88,7 +85,7 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50">
       <div className="container mx-auto px-4 py-16">
-        {/* Heading */}
+
         <div className="text-center mb-16">
           <div className="flex items-center justify-center mb-6">
             <div className="p-3 bg-blue-500 rounded-2xl mr-3">
@@ -104,7 +101,6 @@ export default function Home() {
           </p>
         </div>
 
-        {/* Prompt Form */}
         <div className="max-w-4xl mx-auto mb-16">
           <Card className="border-0 shadow-xl bg-white/70 backdrop-blur-sm">
             <CardContent className="p-8">
@@ -149,7 +145,6 @@ export default function Home() {
           </Card>
         </div>
 
-        {/* Example Prompts */}
         <div className="max-w-6xl mx-auto">
           <h2 className="text-2xl font-bold text-center mb-8 text-slate-800">
             Need inspiration? Try these examples
