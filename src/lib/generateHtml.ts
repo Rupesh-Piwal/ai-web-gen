@@ -1,40 +1,45 @@
-export async function generateHtmlPages(
-  description: string
-): Promise<Record<string, string>> {
-  const pages = ["Home", "About", "Contact"];
+import { generateText } from "ai";
+import { google } from "@ai-sdk/google";
 
-  const htmlByPage: Record<string, string> = {};
+export async function generateHtmlPages(description: string) {
+  console.log("🟡 Generating pages for prompt:", description);
 
-  for (const page of pages) {
-    const prompt = `Generate a complete HTML + inline CSS page for a '${page}' of a website described as: ${description}`;
+  try {
+    const { text } = await generateText({
+      model: google("models/gemini-1.5-flash"),
+      prompt: `
+You are an expert web designer.
 
-    const res = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${process.env.GEMINI_API_KEY}`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          contents: [
-            {
-              parts: [
-                {
-                  text: prompt,
-                },
-              ],
-            },
-          ],
-        }),
-      }
-    );
+Generate a JSON object containing 3 HTML pages for a website based on the following description:
 
-    const data = await res.json();
-    const html =
-      data?.candidates?.[0]?.content?.parts?.[0]?.text ||
-      `<html><body>Error</body></html>`;
-    htmlByPage[page.toLowerCase()] = html;
+"${description}"
+
+Return the result as **valid JSON only**, with the following structure:
+
+{
+  "home": "<html>...</html>",
+  "about": "<html>...</html>",
+  "contact": "<html>...</html>"
+}
+
+Each HTML page must be fully self-contained (including minimal inline CSS).
+No Markdown. No explanation.
+ONLY return valid JSON.
+`,
+      temperature: 0.6,
+    });
+
+    console.log("🔵 Gemini raw text output:\n", text);
+
+    const pages = JSON.parse(text);
+    return pages;
+
+  } catch (err) {
+    console.error("❌ Error from Gemini generateText:", err);
+    return {
+      home: "<html><body><h1>Error</h1></body></html>",
+      about: "<html><body><h1>Error</h1></body></html>",
+      contact: "<html><body><h1>Error</h1></body></html>",
+    };
   }
-
-  return htmlByPage;
 }

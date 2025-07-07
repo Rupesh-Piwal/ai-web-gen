@@ -1,13 +1,40 @@
-let sitePages: Record<string, string> = {};
+// lib/siteStore.ts
 
-export function savePages(pages: Record<string, string>) {
-  sitePages = pages;
+type PageMap = Record<string, string>;
+
+let sitePages: PageMap = {};
+
+/**
+ * Save generated pages into memory (overwrites existing ones)
+ */
+export function savePages(pages: PageMap) {
+  sitePages = { ...pages }; // ensure immutability
 }
 
-export function getPages() {
-  return sitePages;
+/**
+ * Retrieve all saved pages
+ */
+export function getPages(): PageMap {
+  return { ...sitePages }; // return a copy to avoid external mutation
 }
 
-export function getPage(slug: string) {
+/**
+ * Get a specific page by its slug
+ */
+export function getPage(slug: string): string | undefined {
   return sitePages[slug];
+}
+
+/**
+ * Check if any pages exist
+ */
+export function hasPages(): boolean {
+  return Object.keys(sitePages).length > 0;
+}
+
+/**
+ * Clear all stored pages (for regenerate/reset flow)
+ */
+export function clearPages() {
+  sitePages = {};
 }

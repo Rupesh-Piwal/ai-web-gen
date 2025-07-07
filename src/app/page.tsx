@@ -1,11 +1,14 @@
 "use client";
+
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { Loader2, Sparkles, Zap } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
-import { toast } from "sonner";
+import { usePageStore } from "@/lib/store";
 
 const examplePrompts = [
   "A modern portfolio website for a UX designer with dark theme",
@@ -29,12 +32,53 @@ export default function Home() {
 
     setIsGenerating(true);
 
-    
-    setTimeout(() => {
-      setIsGenerating(false);
-      toast.success("Website generated successfully!");
+    try {
+      const res = await fetch("/api/generate", {
+        method: "POST",
+        body: JSON.stringify({ description: prompt }),
+        headers: { "Content-Type": "application/json" },
+      });
+
+      const data = await res.json();
+
+      // Check if the response was successful
+      if (!res.ok) {
+        throw new Error(data.error || `HTTP error! status: ${res.status}`);
+      }
+
+      // The API now returns the pages directly and handles missing pages with fallbacks
+      // Basic validation that we have an object with pages
+      if (!data || typeof data !== "object") {
+        throw new Error("Invalid response format from server");
+      }
+
+      const pageCount = Object.keys(data).length;
+      if (pageCount === 0) {
+        throw new Error("No pages generated");
+      }
+
+      // Set the pages directly since the API returns { home: ..., about: ..., ... }
+      usePageStore.getState().setPages(data);
+      toast.success(
+        `Website generated successfully! (${pageCount} pages created)`
+      );
       router.push("/dashboard");
-    }, 3000);
+    } catch (err: any) {
+      console.error("Generate Error:", err);
+
+      // More specific error messages
+      if (err.message.includes("Invalid response format")) {
+        toast.error("Server returned invalid data. Please try again.");
+      } else if (err.message.includes("No pages generated")) {
+        toast.error("Failed to generate website pages. Please try again.");
+      } else if (err.message.includes("HTTP error")) {
+        toast.error("Server error occurred. Please try again.");
+      } else {
+        toast.error("Something went wrong while generating the site.");
+      }
+    } finally {
+      setIsGenerating(false);
+    }
   };
 
   const handleExampleClick = (example: string) => {
@@ -44,7 +88,7 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50">
       <div className="container mx-auto px-4 py-16">
-        
+        {/* Heading */}
         <div className="text-center mb-16">
           <div className="flex items-center justify-center mb-6">
             <div className="p-3 bg-blue-500 rounded-2xl mr-3">
@@ -60,7 +104,7 @@ export default function Home() {
           </p>
         </div>
 
-        
+        {/* Prompt Form */}
         <div className="max-w-4xl mx-auto mb-16">
           <Card className="border-0 shadow-xl bg-white/70 backdrop-blur-sm">
             <CardContent className="p-8">
@@ -105,7 +149,7 @@ export default function Home() {
           </Card>
         </div>
 
-       
+        {/* Example Prompts */}
         <div className="max-w-6xl mx-auto">
           <h2 className="text-2xl font-bold text-center mb-8 text-slate-800">
             Need inspiration? Try these examples
