@@ -1,4 +1,4 @@
-import { Code, Globe, Palette, Sparkles } from "lucide-react";
+import { Code, Palette, Sparkles } from "lucide-react";
 
 export const quickActions = [
   {

@@ -44,7 +44,7 @@ export default function Home() {
       usePageStore.getState().setPages(data);
       toast.success(`Website created! (${Object.keys(data).length} pages)`);
       router.push("/dashboard");
-    } catch (err) {
+    } catch {
       toast.error("Something went wrong. Please try again.");
     } finally {
       setIsGenerating(false);

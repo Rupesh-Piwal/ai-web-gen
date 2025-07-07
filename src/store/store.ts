@@ -23,7 +23,7 @@ export const usePageStore = create<PageStore>()(
       getPage: (slug) => get().pages[slug],
     }),
     {
-      name: "page-store", // key in localStorage
+      name: "page-store", 
     }
   )
 );

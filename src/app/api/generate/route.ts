@@ -2,12 +2,10 @@ import { NextRequest, NextResponse } from "next/server";
 import { google } from "@ai-sdk/google";
 import { generateText } from "ai";
 
-// This is where the magic happens
 export async function POST(req: NextRequest) {
   try {
     const { description } = await req.json();
 
-    // Validate input
     if (!description || typeof description !== "string") {
       return NextResponse.json(
         { error: "Description is required and must be a string" },
@@ -94,8 +92,11 @@ Important:
     }
 
     return NextResponse.json(pages);
-  } catch (err: any) {
-    console.error("🔴 Error in /api/generate:", err?.message || err);
+  } catch (err) {
+    const errorMessage =
+      err instanceof Error ? err.message : "Unknown error occurred";
+
+    console.error("🔴 Error in /api/generate:", errorMessage);
 
     if (err instanceof SyntaxError) {
       return NextResponse.json(
@@ -105,7 +106,7 @@ Important:
     }
 
     return NextResponse.json(
-      { error: err?.message || "Generation failed" },
+      { error: errorMessage || "Generation failed" },
       { status: 500 }
     );
   }
