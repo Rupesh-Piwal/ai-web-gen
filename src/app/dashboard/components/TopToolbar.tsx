@@ -21,11 +21,7 @@ export const TopToolbar = ({
 
         <div className="flex items-center gap-3">
           {additionalActions}
-
-     
-          <div className="flex items-center gap-2">
-          
-          </div>
+          <div className="flex items-center gap-2"></div>
         </div>
       </div>
     </div>
